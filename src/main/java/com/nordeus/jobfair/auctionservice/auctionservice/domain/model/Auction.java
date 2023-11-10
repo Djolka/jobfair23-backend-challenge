@@ -12,8 +12,7 @@ import java.util.Collection;
 public class Auction {
 
     public static Collection<Auction> auctions = new ArrayList<>();
-    // TODO: set it to AuctinId type
-    private final String auctionId;
+    private final AuctionId auctionId;
     private int highestBid;
     private User winner;
     private boolean isActive;
@@ -23,7 +22,7 @@ public class Auction {
     private final int auctionLength = 60;
 
     public Auction(Player player) {
-        this.auctionId = new AuctionId().getId();
+        this.auctionId = new AuctionId();
         this.highestBid = 1;
         this.winner = null;
         this.player = player;
@@ -32,23 +31,23 @@ public class Auction {
     }
 
     public String getAuctionId() {
-        return this.auctionId;
+        return this.auctionId.getId();
     }
 
     public int getHighestBid() {
-        return highestBid;
+        return this.highestBid;
     }
 
     public User getWinner() {
-        return winner;
+        return this.winner;
     }
 
     public int getAuctionTime() {
-        return auctionTime;
+        return this.auctionTime;
     }
 
     public Player getPlayer() {
-        return player;
+        return this.player;
     }
 
 //    public int getAuctionLength() {
@@ -56,11 +55,11 @@ public class Auction {
 //    }
 
     public Collection<User> getUsers() {
-        return users;
+        return this.users;
     }
 
     public boolean isActive() {
-        return isActive;
+        return this.isActive;
     }
 
     public void setWinner(User winner) {
@@ -76,7 +75,7 @@ public class Auction {
     }
 
     public void setActive(boolean active) {
-        isActive = active;
+        this.isActive = active;
     }
 
     public void addUser(User user) {
@@ -85,6 +84,6 @@ public class Auction {
 
     @Override
     public String toString() {
-        return "ID: " + this.auctionId + ". For player:  " + this.player.toString();
+        return "ID: " + this.auctionId.getId() + ". For player:  " + this.player.toString();
     }
 }

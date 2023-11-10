@@ -35,6 +35,6 @@ public class AuctionNotifierLogger implements AuctionNotifer {
 
     @Override
     public void activeAuctionsRefreshed(Auction activeAuction) {
-        logger.info("New auction: " + activeAuction.toString());
+        logger.info("New auction * " + activeAuction.toString());
     }
 }
