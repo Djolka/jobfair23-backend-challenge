@@ -5,10 +5,10 @@ import com.nordeus.jobfair.auctionservice.auctionservice.domain.service.AuctionN
 import lombok.AllArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-import org.springframework.web.client.HttpClientErrorException;
 
 import java.util.*;
 import java.util.logging.Logger;
+import java.util.stream.Collectors;
 
 @Service
 @AllArgsConstructor
@@ -22,21 +22,22 @@ public class AuctionServiceImpl extends TimerTask implements AuctionService {
 
     private Timer timer;
     private int seconds = 0;
+    private final int numberOfAuctionToGenerate = 10;
+    private final int generateAuctionsInterval = 60;
 
     @Autowired
     public AuctionServiceImpl(AuctionNotifer auctionNotifer) {
-        generateNewAuctions();
-
         this.auctionNotifer = auctionNotifer;
         this.timer = new Timer();
         long delay = 0; // Delay before the first execution (0 for immediate execution)
         long period = 1000; // Period in ms
+        generateNewAuctions();
         timer.scheduleAtFixedRate(this, delay, period);
     }
 
     @Override
     public Collection<Auction> getAllActive() {
-        return Auction.auctions;
+        return Auction.auctions.stream().filter(Auction::isActive).collect(Collectors.toList());
     }
 
     @Override
@@ -47,7 +48,7 @@ public class AuctionServiceImpl extends TimerTask implements AuctionService {
 
     @Override
     public void join(AuctionId auctionId, User user) {
-//        // Find Auction with auctionId
+        // Find Auction with auctionId
         Optional<Auction> optionalAuction = Auction.auctions.stream()
                 .filter(auction -> auction.getAuctionId().equals(auctionId.getId()))
                 .findAny();
@@ -55,9 +56,7 @@ public class AuctionServiceImpl extends TimerTask implements AuctionService {
         if (optionalAuction.isPresent()) {
             Auction auction = optionalAuction.get();
             auction.addUser(user);
-            logger.info("New user: " + user.toString() + " added to auction:" + auction.toString());
         } else {
-//            logger.warning("Auction not found for AuctionId: " + auctionId);
             throw new NoSuchElementException("Auction not found for AuctionId: " + auctionId);
         }
     }
@@ -77,16 +76,20 @@ public class AuctionServiceImpl extends TimerTask implements AuctionService {
             Auction auction = optionalAuction.get();
             User user = optionalUser.get();
 
+            if(!auction.getUsers().contains(user)) {
+                throw new IllegalStateException("You must first join the auction to be able to bid");
+            }
+
             if(auction.isActive()) {
                 auction.setWinner(user);
-
                 auction.setHighestBid(auction.getHighestBid()+1);
+                if(auction.getAuctionTime() < 5) {
+                    auction.setAuctionTime(5);
+                }
 
-                // TODO: add time to auction if less than 5 seconds until the end
-
-                auctionNotifer.bidPlaced(new Bid(user, auction));
+                this.auctionNotifer.bidPlaced(new Bid(user, auction));
             }else {
-                throw new IllegalStateException("Aukcija: " + auction.toString() + " is not active!");
+                throw new IllegalStateException("Auction: " + auction.toString() + " is not active!");
             }
         }else {
             throw new NoSuchElementException("error");
@@ -97,33 +100,50 @@ public class AuctionServiceImpl extends TimerTask implements AuctionService {
     // Generate 10 auctions every minute
     @Override
     public void run(){
-        this.seconds += 1;
-        logger.info(String.valueOf(this.seconds));
+        // find all active
+        Collection<Auction> activeAuctions = this.getAllActive();
+        for(Auction a : activeAuctions) {
+            a.setAuctionTime(a.getAuctionTime()-1);
 
-        if(this.seconds == 10) {
+            if(a.getAuctionTime() == 0) {
+                a.setActive(false);
+                if(a.getWinner() != null){
+                    this.auctionNotifer.auctionFinished(a, true);
+                }else {
+                    this.auctionNotifer.auctionFinished(a, false);
+                    // no winners => starts from the start
+                }
+            }
+        }
+
+        this.seconds += 1;
+//        logger.info(String.valueOf(this.seconds));
+        if(this.seconds == this.generateAuctionsInterval) {
             generateNewAuctions();
             this.seconds = 0;
         }
     }
 
     private void generateNewAuctions() {
-        logger.info("generating new auctions");
+//        this.logger.info("generating new auctions");
         List<Player> notAuctionedPlayers = new ArrayList<>(Player.players.stream().filter((player -> !player.isOnAuction())).toList());
+
         // if not enough not auctioned players (10) then don't generate new Auctions
-        if(notAuctionedPlayers.size() < 10) {
-                logger.info(String.valueOf(notAuctionedPlayers.size()));
-                timer.cancel();
-                return;
+        if(notAuctionedPlayers.size() < this.numberOfAuctionToGenerate) {
+            return;
         }
 
-        for (int i = 0;i < 10;i++) {
+        for (int i = 0; i < this.numberOfAuctionToGenerate; i++) {
             Collections.shuffle(notAuctionedPlayers);
+
             Player playerForAuction = notAuctionedPlayers.get(0);
             notAuctionedPlayers.remove(0);
             playerForAuction.setOnAuction(true);
-            logger.info(playerForAuction.toString());
+
             Auction newAuction = new Auction(playerForAuction);
             Auction.auctions.add(newAuction);
+
+            this.auctionNotifer.activeAuctionsRefreshed(newAuction);
         }
     }
 }

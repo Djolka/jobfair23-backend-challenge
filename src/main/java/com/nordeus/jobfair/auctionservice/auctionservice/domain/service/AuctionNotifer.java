@@ -7,9 +7,9 @@ import java.util.Collection;
 
 public interface AuctionNotifer {
 
-    void auctionFinished(Auction auction);
+    void auctionFinished(Auction auction, boolean hasWinner);
 
     void bidPlaced(Bid bid);
 
-    void activeAuctionsRefreshed(Collection<Auction> activeAuctions);
+    void activeAuctionsRefreshed(Auction activeAuctions);
 }

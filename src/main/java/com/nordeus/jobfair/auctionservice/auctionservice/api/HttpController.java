@@ -1,7 +1,6 @@
 package com.nordeus.jobfair.auctionservice.auctionservice.api;
 
 import com.nordeus.jobfair.auctionservice.auctionservice.domain.AuctionService;
-import com.nordeus.jobfair.auctionservice.auctionservice.domain.AuctionServiceImpl;
 import com.nordeus.jobfair.auctionservice.auctionservice.domain.model.Auction;
 import com.nordeus.jobfair.auctionservice.auctionservice.domain.model.AuctionId;
 import com.nordeus.jobfair.auctionservice.auctionservice.domain.model.User;
@@ -10,7 +9,6 @@ import lombok.AllArgsConstructor;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.*;
-import java.util.logging.Logger;
 
 @AllArgsConstructor
 @RestController
@@ -19,7 +17,6 @@ public class HttpController {
 
     private AuctionService auctionService;
 
-    // TODO: get all active Auctions (with isActive=true)
     @GetMapping("/active")
     public Collection<Auction> getAllActive() {
         return auctionService.getAllActive();
@@ -30,10 +27,6 @@ public class HttpController {
         return auctionService.getAuction(auctionId);
     }
 
-
-      //Test
-//    @GetMapping("/users")
-//    public Collection<User> getAllUsers() { return User.users; }
 
     @PostMapping("/joinAuction/{auctionId}/{userId}")
     public void userJoinAuction(@PathVariable String auctionId, @PathVariable String userId){

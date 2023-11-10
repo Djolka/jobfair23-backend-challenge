@@ -29,13 +29,6 @@ public class User {
     private final String lastName;
     private final String teamName;
 
-//    public User(String id, String name, String lastName, String teamName) {
-//        this.userId = id; /*new UserId().getId();*/
-//        this.name = name;
-//        this.lastName = lastName;
-//        this.teamName = teamName;
-//    }
-
     public String getUserId() {
         return userId;
     }
@@ -46,5 +39,10 @@ public class User {
 
     public String getLastName() {
         return lastName;
+    }
+
+    @Override
+    public String toString() {
+        return this.name + " " + this.lastName;
     }
 }

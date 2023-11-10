@@ -57,7 +57,7 @@ public class Player {
 
     @Override
     public String toString() {
-        return this.name + " " + this.lastName + " " + this.rating + ", " + this.clubName + ". Position: " + this.position + "- Special Ability: " + this.specialAbility;
+        return this.name + " " + this.lastName + ", " + this.clubName;
     }
 
     public boolean isOnAuction() {
