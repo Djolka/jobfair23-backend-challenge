@@ -4,22 +4,19 @@ import lombok.AllArgsConstructor;
 import lombok.Getter;
 
 import java.util.ArrayList;
-import java.util.Collection;
-
 
 @Getter
 @AllArgsConstructor
 public class Auction {
 
-    public static Collection<Auction> auctions = new ArrayList<>();
+    public static ArrayList<Auction> auctions = new ArrayList<>();
     private final AuctionId auctionId;
     private int highestBid;
     private User winner;
     private boolean isActive;
-    private Player player; // football player which the auction is for
-    private Collection<User> users = new ArrayList<>(); // managers (users)
-    private  int auctionTime;
-    private final int auctionLength = 60;
+    private Player player;
+    private ArrayList<User> users = new ArrayList<>(); // managers
+    private int auctionTime;
 
     public Auction(Player player) {
         this.auctionId = new AuctionId();
@@ -27,7 +24,7 @@ public class Auction {
         this.winner = null;
         this.player = player;
         this.isActive = true;
-        this.auctionTime = this.auctionLength;
+        this.auctionTime = 60;
     }
 
     public String getAuctionId() {
@@ -50,11 +47,7 @@ public class Auction {
         return this.player;
     }
 
-//    public int getAuctionLength() {
-//        return auctionLength;
-//    }
-
-    public Collection<User> getUsers() {
+    public ArrayList<User> getUsers() {
         return this.users;
     }
 

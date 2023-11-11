@@ -4,6 +4,7 @@ import com.nordeus.jobfair.auctionservice.auctionservice.domain.model.Auction;
 import com.nordeus.jobfair.auctionservice.auctionservice.domain.model.AuctionId;
 import com.nordeus.jobfair.auctionservice.auctionservice.domain.model.User;
 import com.nordeus.jobfair.auctionservice.auctionservice.domain.model.UserId;
+import org.springframework.http.ResponseEntity;
 
 import java.util.Collection;
 
@@ -13,7 +14,7 @@ public interface AuctionService {
 
     Auction getAuction(AuctionId auctionId);
 
-    void join(AuctionId auctionId, User user);
+    ResponseEntity<String> join(AuctionId auctionId, User user);
 
-    void bid(AuctionId auctionId, UserId userId);
+    ResponseEntity<String> bid(AuctionId auctionId, UserId userId);
 }

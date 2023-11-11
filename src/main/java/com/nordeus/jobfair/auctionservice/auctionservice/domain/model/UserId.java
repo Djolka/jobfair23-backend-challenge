@@ -1,4 +1,5 @@
 package com.nordeus.jobfair.auctionservice.auctionservice.domain.model;
+
 import java.util.UUID;
 
 public class UserId {

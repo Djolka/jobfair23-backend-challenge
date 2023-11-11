@@ -2,8 +2,8 @@ package com.nordeus.jobfair.auctionservice.auctionservice.domain.model;
 
 public class Bid {
 
-    private User user; // which user did bid
-    private Auction auction;
+    private final User user;
+    private final Auction auction;
 
     public Bid(User user, Auction auction) {
         this.user = user;
